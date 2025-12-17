@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My To-Do List</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff9f5;
+      color: #333;
+      padding: 1rem;
+      max-width: 600px;
+      margin: auto;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark-mode {
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+    }
+
+    h1 {
+      text-align: center;
+  color: #ff69b4;
+  font-size: 2.5rem;
+  text-shadow: 1px 1px 2px #ffaec9;
+  margin-bottom: 0.3rem;
+    }
+
+    h2 {
+      text-align: center;
+  color: #ef9ac4;
+  font-size: 1.25rem;
+  margin-top: 0;
+    }
+
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    input[type="text"] {
+      flex: 1 1 70%;
+      padding: 0.6rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    button {
+  padding: 0.6rem 1.2rem;
+  /* background-color: #ffb6c1; */
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  /* box-shadow: 0 2px 5px rgba(0,0,0,0.1); */
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #ff69b4;
+  color: white;
+  transform: translateY(-2px);
+}
+
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+   li.task-item {
+  background: #ffeef0;
+  margin-bottom: 0.5rem;
+  padding: 0.7rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 5px rgba(255,182,193,0.2);
+  transition: transform 0.2s ease;
+}
+
+li.task-item:hover {
+  transform: translateY(-2px);
+}
+
+    li.completed span {
+      text-decoration: line-through;
+      color: #999;
+    }
+
+    body.dark-mode li.task-item {
+  background-color: #2b2b2b;
+  color: #eee;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+
+body.dark-mode input[type="text"] {
+  background-color: #333;
+  color: #f0f0f0;
+  border: 1px solid #555;
+}
+
+
+    body.dark-mode button {
+      background-color: #ff69b4;
+      color: white;
+    }
+
+    body.dark-mode button:hover {
+      background-color: #ff85c1;
+    }
+
+    #toggle-dark-mode {
+      float: right;
+      /* margin-bottom: 1rem; */
+      margin-top: 2rem;
+      margin-right: -1.5rem;
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      
+    }
+
+    html, body {
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      h2 {
+        font-size: 1.1rem;
+      }
+     
+    
+      
+    }
+
+    .delete-btn {
+      align-self: flex-end;
+  font-size: 1.2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: transform 0.2s;
+}
+
+.delete-btn:hover {
+  transform: scale(1.2);
+}
+.quote-box {
+  background-color: #fff0f5;
+  border-radius: 12px;
+  padding: 0.5rem;
+  margin: 1rem auto;
+  max-width: 800px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  color: #444;
+  font-size: 1.2rem;
+  /* font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif ; */
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+body.dark-mode .quote-box {
+  background-color: #2c2c2c;
+  color: #f0f0f0;
+}
+
+.mascot-quote-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  /* flex-wrap: wrap; */
+}
+
+.ai-mascot {
+  width: 50px;
+  height: 50px;
+  border-radius: 30%;
+  animation: float 2.5s ease-in-out infinite;
+}
+.mascot .eye {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: black;
+  border-radius: 50%;
+  top: 20px;
+  left: 16px;
+  animation: blink 4s infinite;
+}
+
+.mascot .eye.right {
+  left: 34px;
+}
+
+@keyframes blink {
+  0%, 97%, 100% {
+    transform: scaleY(1);
+  }
+  98%, 99% {
+    transform: scaleY(0.1);
+  }
+}
+
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+/* .quote-refresh {
+  margin-top: 1rem;
+  background-color: #ffb6c1;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.quote-refresh:hover {
+  background-color: #ff69b4;
+  color: white;
+} */
+
+
+  </style>
+</head>
+<body>
+  <div style="text-align:right; margin-bottom:1rem;">
+    <button id="toggle-dark-mode">🌙</button>
+  </div>
+  <div style="position: absolute; top: 8px; right: 4px; ;">
+  <button onclick="logout()" style="padding: 5px 2px; background-color: none; border: none; border-radius: 8px; cursor: pointer;  ">Logout</button>
+</div>
+  <h1>🌸 My To-Do List</h1>
+  
+  <h2 id="greeting" ></h2>
+
+  
+<div id="quote-box" class="quote-box">
+  <img id="ai-mascot" alt="AI Mascot" class="ai-mascot" />
+  <div>
+    <p id="ai-quote" class="quote-text">Loading motivational quote...</p>
+  </div>
+</div>
+
+
+  
+  <form id="task-form">
+    <input type="text" id="task-input" placeholder="Add a task..." autocomplete="off" />
+    <button type="submit">Add</button>
+  </form>
+
+  <ul id="task-list"></ul>
+
+  <div style="text-align:center; margin-top:2rem;">
+    <a href="summary.html">
+      <button>View Summary</button>
+    </a>
+  </div>
+
+  <script src="todo.js"></script>
+</body>
+</html>
