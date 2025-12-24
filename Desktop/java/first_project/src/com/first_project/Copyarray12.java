@@ -17,10 +17,11 @@ public class Copyarray12 {
 		int m[]= {11,22,33,44};
 		int n[]=new int[m.length];
 		int j=m.length-1;
-		for(int i=0;i<m.length;i++) {
+		for(int i=0;i<m.length;i++) {  // forward loop use kiya
 			n[i]=m[j];
 			j--;
 		}
+//		solved using forward loop
         for(int i=0;i<m.length;i++) {
         	System.out.print(n[i]+" ");
         }
