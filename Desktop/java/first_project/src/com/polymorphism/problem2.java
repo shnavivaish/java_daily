@@ -1,5 +1,5 @@
+//abstarction in polymorphism using parent class refernace variable
 package com.polymorphism;
-
 //import Inheritance.trainer;
 
 public class problem2 {
